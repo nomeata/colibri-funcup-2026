@@ -87,13 +87,15 @@ for flight in flight_data:
     time_obj = datetime.datetime.strptime(time_str, "%H:%M:%S").time()
     flight['stats']['starttime_seconds'] = time_obj.hour * 3600 + time_obj.minute * 60 + time_obj.second
     flight['stats']['sektoren_count'] = len(flight['stats']['sektoren'])
-    flight['stats']['prettystarttime'] = f"{flight['stats']['starttime_seconds'] // 3600:02}:{(flight['stats']['starttime_seconds'] % 3600) // 60:02}"
+    # flight['stats']['prettystarttime'] = f"{flight['stats']['starttime_seconds'] // 3600:02}:{(flight['stats']['starttime_seconds'] % 3600) // 60:02}"
     flight['stats']['prettyflighttime'] = pretty_duration(flight['stats']['duration'])
     flight['stats']['xcscore'] = round(flight['BestTaskPoints'])
+    flight['stats']['maxspeed'] = round(flight['MaxSpeed']*3.6)  # m/s to km/h
+    flight['stats']['avgspeed'] = round(flight['GroundSpeed']*3.6)  # m/s to km/h
 
 stat_keys = [
     #'starttime_seconds', 
-    'duration', 'left_turns', 'right_turns', 'drehueberschuss', 'sektoren_count', 'maxalt', 'xcscore']
+    'duration', 'drehueberschuss', 'sektoren_count', 'maxalt', 'xcscore', 'maxspeed', 'avgspeed']
 
 # calculate median flight stats
 # (by storing each category in a sorted list, also used for later distribution analysis)
@@ -102,7 +104,7 @@ for k in stat_keys:
     sorted_stats[k] = sorted([ f['stats'][k] for f in flight_data ])
 
 median_stats = { k: vs[len(vs) // 2] for k, vs in sorted_stats.items() }
-median_stats['prettystarttime'] = f"{median_stats['starttime_seconds'] // 3600:02}:{(median_stats['starttime_seconds'] % 3600) // 60:02}"
+# median_stats['prettystarttime'] = f"{median_stats['starttime_seconds'] // 3600:02}:{(median_stats['starttime_seconds'] % 3600) // 60:02}"
 median_stats['prettyflighttime'] = pretty_duration(median_stats['duration'])
 
 # compute first and last rank of element in sorted list
@@ -249,6 +251,8 @@ for pid, pflights in flights.items():
           'hike': is_hike,
           'score': f['stats']['score'],
           'xcscore': f['stats']['xcscore'],
+          'avgspeed': f['stats']['avgspeed'],
+          'maxspeed': f['stats']['maxspeed'],
           'is_best': 'is_best' in f,
           'url': f"https://de.dhv-xc.de/flight/{id}",
         }

@@ -71,6 +71,8 @@ body:has(input#stats:checked) div#stats { display: block; }
 <!-- <th class="text-right">⌚</th> -->
 <th class="text-right">⏱️</th>
 <th class="text-right">☁️</th>
+<th class="text-right">▶️</th>
+<th class="text-right">⏩</th>
 <th class="text-right">|⟲-⟳|</th>
 <th class="text-right">⌔</th>
 <th class="text-right"><img src="static/dhv-xc.png" /></th>
@@ -84,7 +86,9 @@ body:has(input#stats:checked) div#stats { display: block; }
 	<td style="font-weight: bold;">Max Musterpilot</td>
 	<!-- <td class="text-right">{{ median_stats.prettystarttime }}</td> -->
 	<td class="text-right">{{ median_stats.prettyflighttime }}</td>
-	<td class="text-right">{{ median_stats.maxalt }}m</td>
+	<td class="text-right">{{ median_stats.maxalt }} m</td>
+	<td class="text-right">{{ median_stats.avgspeed }} km/h</td>
+	<td class="text-right">{{ median_stats.maxspeed }} km/h</td>
 	<td class="text-right">{{ median_stats.drehueberschuss }}</td>
 	<td class="text-right">{{ median_stats.sektoren_count }}</td>
 	<td class="text-right">{{ median_stats.xcscore }} pt.</td>
@@ -99,11 +103,13 @@ body:has(input#stats:checked) div#stats { display: block; }
 <td><a href="pilot{{p.pid}}.html">{{ p.name }}</a></td>
 <!-- <td class="text-right">{{ p.best_flight.stats.prettystarttime }}</td> -->
 <td class="text-right">{{ p.best_flight.stats.prettyflighttime }}</td>
-<td class="text-right">{{ p.best_flight.stats.maxalt }}m</td>
+<td class="text-right">{{ p.best_flight.stats.maxalt }} m</td>
+<td class="text-right">{{ p.best_flight.stats.avgspeed }} km/h</td>
+<td class="text-right">{{ p.best_flight.stats.maxspeed }} km/h</td>
 <td class="text-right">{{ p.best_flight.stats.sektoren_count }}</td>
 <td class="text-right">{{ p.best_flight.stats.drehueberschuss }}</td>
 <td class="text-right"><a href="https://de.dhv-xc.de/flight/{{ p.best_flight.IDFlight }}">{{ p.best_flight.stats.xcscore }} pt.</a></td>
-<td class="text-right">{{ p.best_flight.stats.score }}%</td>
+<td class="text-right">{{ p.best_flight.stats.score }} %</td>
 </tr>
 {% endfor %}
 </tbody></table>
