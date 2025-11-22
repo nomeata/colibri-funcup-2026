@@ -39,6 +39,8 @@
 <th class="text-right">☁️</th>
 <th class="text-right">▶️</th>
 <th class="text-right">⏩</th>
+<th class="text-right">🔼</th>
+<th class="text-right">🔽</th>
 <th class="text-right">⟲</th>
 <th class="text-right">⟳</th>
 {# <th class="text-right">◎</th> #}
@@ -55,18 +57,19 @@
 <tr>
 <td class="text-right">{{ f.n }}</td>
 <td class="text-right">{{ f.datum }}</td>
-<td class="text-right">{{ f.flugzeit }}</td>
-<td class="text-right">{{ f.maxalt }} m</td>
-<td class="text-right">{{ f.avgspeed }} km/h</td>
-<td class="text-right">{{ f.maxspeed }} km/h</td>
-<td class="text-right">{{ f.linkskreise }}</td>
-<td class="text-right">{{ f.rechtskreise }}</td>
-{# <td class="text-right">{{ f.landepunktabstand }}</td> #}
+<td class="text-right">{{ f.stats.prettyflighttime }}</td>
+<td class="text-right">{{ f.stats.maxalt }} m</td>
+<td class="text-right">{{ f.stats.avgspeed }} km/h</td>
+<td class="text-right">{{ f.stats.maxspeed }} km/h</td>
+<td class="text-right">{{ f.stats.maxclimb }} m/s</td>
+<td class="text-right">{{ f.stats.minclimb }} m/s</td>
+<td class="text-right">{{ f.stats.left_turns }}</td>
+<td class="text-right">{{ f.stats.right_turns }}</td>
 <td class="text-right">{{ f.neue_sektoren_anzahl }}</td>
 <td class="text-center">{% if f.hike %}🥾{% endif %}</td>
 <td class="text-center">{% if f.fotos %}📷{% endif %}</td>
-<td class="text-right"><a href="{{f.url}}">{{ f.xcscore }} pt.</a></td>
-<td class="text-right">{{ f.score }}%</td>
+<td class="text-right"><a href="{{f.url}}">{{ f.stats.xcscore }} pt.</a></td>
+<td class="text-right">{{ f.stats.score }}%</td>
 <td class="text-left">{% if f.is_best %}⭐{% endif %}</td>
 </tr>
 {% endfor %}

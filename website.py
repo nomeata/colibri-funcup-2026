@@ -91,12 +91,13 @@ for flight in flight_data:
     flight['stats']['prettyflighttime'] = pretty_duration(flight['stats']['duration'])
     flight['stats']['xcscore'] = round(flight['BestTaskPoints'])
     flight['stats']['maxspeed'] = round(flight['MaxSpeed']*3.6)  # m/s to km/h
-    flight['stats']['avgspeed'] = round(flight['GroundSpeed']*3.6)  # m/s to km/h
+    flight['stats']['avgspeed'] = round(flight['BestTaskSpeed']*3.6)  # m/s to km/h
+    flight['stats']['maxclimb'] = round(flight['MaxClimb'], 1)
+    flight['stats']['minclimb'] = round(flight['MinClimb'], 1)
 
 stat_keys = [
     #'starttime_seconds', 
-    'duration', 'drehueberschuss', 'sektoren_count', 'maxalt', 'xcscore', 'maxspeed', 'avgspeed']
-
+    'duration', 'drehueberschuss', 'sektoren_count', 'maxalt', 'xcscore', 'maxspeed', 'avgspeed', 'maxclimb', 'minclimb']
 # calculate median flight stats
 # (by storing each category in a sorted list, also used for later distribution analysis)
 sorted_stats = {}
@@ -126,7 +127,7 @@ for flight in flight_data:
         else:
             scores.append(min(abs(mid - r1), abs(mid - r2))/mid * 100)
     score = math.sqrt(sum([s*s for s in scores]))
-    flight['stats']['score'] = int(score)
+    flight['stats']['score'] = round(score, 1)
 
 def finalize_stats(stats, covered):
     stats['sektoren'] = len(covered)
@@ -239,20 +240,13 @@ for pid, pflights in flights.items():
           'datum': datetime.date.fromisoformat(f['FlightDate']).strftime("%d.%m."),
           'landeplatz': f['TakeoffWaypointName'],
           'flugzeit_sekunden': f['FlightDuration'],
-          'flugzeit': pretty_duration(f['FlightDuration']),
-          'linkskreise': f['stats']['left_turns'],
-          'rechtskreise': f['stats']['right_turns'],
           #'landepunktabstand_meter': f['stats']['landepunktabstand'],
           #'landepunktabstand': pretty_landepunktabstand(f['stats']['landepunktabstand']),
           'neue_sektoren': " ".join(sorted(list(new))),
           'neue_sektoren_anzahl': len(new),
-          'maxalt': f['stats']['maxalt'],
           'fotos': has_fotos,
           'hike': is_hike,
-          'score': f['stats']['score'],
-          'xcscore': f['stats']['xcscore'],
-          'avgspeed': f['stats']['avgspeed'],
-          'maxspeed': f['stats']['maxspeed'],
+          'stats': f['stats'],
           'is_best': 'is_best' in f,
           'url': f"https://de.dhv-xc.de/flight/{id}",
         }
