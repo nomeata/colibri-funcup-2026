@@ -52,17 +52,6 @@ except FileExistsError:
     pass
 shutil.copytree('templates/static', '_out/static', dirs_exist_ok=True)
 
-# Last year's points
-old_data = json.load(open('data2024.json'))
-old_points = {}
-for pilot_data in old_data["pilots"]:
-    if pilot_data["stats"]["flighttime"] >= 3600:
-        old_points[pilot_data["pid"]] = pilot_data["points"]["total"]
-
-# Last year's median
-# (TODO)
-
-
 flight_data = json.load(open('_tmp/flights.json'))
 
 flights = {}
@@ -89,6 +78,52 @@ if flight_data:
 else:
     latest_flight = "(noch keinen gesehen)"
 
+# derived and cleand-up stats
+for flight in flight_data:
+    flight['stats']['drehueberschuss'] = abs(flight['stats']['left_turns'] - flight['stats']['right_turns'])
+    flight['stats']['duration'] = flight['FlightDuration']
+    flight['stats']['maxalt'] = flight['MaxAltitude']
+    time_str = flight['FlightStartTime'].split(' ')[1]
+    time_obj = datetime.datetime.strptime(time_str, "%H:%M:%S").time()
+    flight['stats']['starttime_seconds'] = time_obj.hour * 3600 + time_obj.minute * 60 + time_obj.second
+    flight['stats']['sektoren_count'] = len(flight['stats']['sektoren'])
+    flight['stats']['prettystarttime'] = f"{flight['stats']['starttime_seconds'] // 3600:02}:{(flight['stats']['starttime_seconds'] % 3600) // 60:02}"
+    flight['stats']['prettyflighttime'] = pretty_duration(flight['stats']['duration'])
+    flight['stats']['xcscore'] = round(flight['BestTaskPoints'])
+
+stat_keys = ['starttime_seconds', 'duration', 'left_turns', 'right_turns', 'drehueberschuss', 'sektoren_count', 'maxalt', 'xcscore']
+
+# calculate median flight stats
+# (by storing each category in a sorted list, also used for later distribution analysis)
+sorted_stats = {}
+for k in stat_keys:
+    sorted_stats[k] = sorted([ f['stats'][k] for f in flight_data ])
+
+median_stats = { k: vs[len(vs) // 2] for k, vs in sorted_stats.items() }
+median_stats['prettystarttime'] = f"{median_stats['starttime_seconds'] // 3600:02}:{(median_stats['starttime_seconds'] % 3600) // 60:02}"
+median_stats['prettyflighttime'] = pretty_duration(median_stats['duration'])
+
+# compute first and last rank of element in sorted list
+def ranks(x, vs):
+    first = vs.index(x) + 1
+    last = len(vs) - vs[::-1].index(x)
+    return (first, last)
+
+# Now rank each flight
+for flight in flight_data:
+    scores = []
+    for k in stat_keys:
+        vs = sorted_stats[k]
+        v = flight['stats'][k]
+        (r1, r2) = ranks(v, vs)
+        mid = len(vs)/2
+        if r1 <= mid and r2 >= mid:
+            scores.append(0)
+        else:
+            scores.append(min(abs(mid - r1), abs(mid - r2))/mid * 100)
+    score = math.sqrt(sum([s*s for s in scores]))
+    flight['stats']['score'] = int(score)
+
 def finalize_stats(stats, covered):
     stats['sektoren'] = len(covered)
     if stats['left_turns'] > stats['right_turns']:
@@ -98,23 +133,6 @@ def finalize_stats(stats, covered):
         stats['drehrichtung'] = "(nach rechts)"
         stats['drehueberschuss'] = stats['right_turns'] - stats['left_turns']
     stats['prettyflighttime'] = pretty_duration(stats['flighttime'])
-
-def points_of_stats(stats):
-    points = {
-        'schauiflights':   stats['schauiflights']   * 5,
-        'lindenflights':   stats['lindenflights']   * 5,
-        'flighttime':      stats['flighttime']      // 60,
-        'hikes':           stats['hikes']           * 120,
-        'fotos':           stats['fotos']           * 3,
-        'sektoren':        stats['sektoren']        * 23,
-        #'landepunkt1':     stats['landepunkt1']     * 100,
-        #'landepunkt2':     stats['landepunkt2']     * 25,
-        #'landepunkt3':     stats['landepunkt3']     * 5,
-        'drehueberschuss': stats['drehueberschuss'] * -1,
-        'sonderwertung':   stats['sonderwertung']   * 400,
-    }
-    points['total'] = sum(points.values())
-    return points
 
 # Create per pilot website, and gather stats
 pilots = []
@@ -156,6 +174,10 @@ for pid, pflights in flights.items():
       stats['sonderwertung'] += 1  
     if pid == '14679':
       stats['sonderwertung'] += 1  
+
+    # Best average flight
+    best_avg_flight = min(pflights, key=lambda f: f['stats']['score'])
+    best_avg_flight['is_best'] = True
 
     data = {}
     # data['lpradius1'] = constants.lpradius1
@@ -220,8 +242,12 @@ for pid, pflights in flights.items():
           #'landepunktabstand': pretty_landepunktabstand(f['stats']['landepunktabstand']),
           'neue_sektoren': " ".join(sorted(list(new))),
           'neue_sektoren_anzahl': len(new),
+          'maxalt': f['stats']['maxalt'],
           'fotos': has_fotos,
           'hike': is_hike,
+          'score': f['stats']['score'],
+          'xcscore': f['stats']['xcscore'],
+          'is_best': 'is_best' in f,
           'url': f"https://de.dhv-xc.de/flight/{id}",
         }
         data['flights'].append(fd)
@@ -236,48 +262,29 @@ for pid, pflights in flights.items():
             sektor_pilots[s] = 0
         sektor_pilots[s] += 1
 
-    # Calculate points
-    points = points_of_stats(stats)
-
-    # Relative points
-    if pid in old_points:
-        points["old"] = old_points[pid]
-        points["relative"] = points["total"] / old_points[pid]
-    else:
-        points["relative"] = None
-
     pilots.append({
         'pid': pid,
         'name': name,
         'stats': stats,
-        'points': points,
+        'best_flight': best_avg_flight,
     })
 
     # Write per-pilot website
     data['pid'] = pid
     data['name'] = name
     data['stats'] = stats
-    data['points'] = points
     data['now'] = now
     data['latest_flight'] = latest_flight
     data['count_flight'] = len(flight_data)
+    data['best_flight'] = best_avg_flight
     pilottemplate\
       .stream(data) \
       .dump(open(f'_out/pilot{pid}.html', 'w'))
 
 
-# Sort pilots
-pilots.sort(key = lambda p: - p['points']['total'])
+# Sort pilots (TODO)
+pilots.sort(key = lambda p: p['best_flight']['stats']['score'])
 for i, p in enumerate(pilots):
-    p['rank'] = i + 1
-
-pilots_new = [ p.copy() for p in pilots if p['points']["relative"] is None ]
-for i, p in enumerate(pilots_new):
-    p['rank'] = i + 1
-
-pilots_rel = [ p.copy() for p in pilots if p['points']["relative"] is not None ]
-pilots_rel.sort(key = lambda p: - p['points']['relative'])
-for i, p in enumerate(pilots_rel):
     p['rank'] = i + 1
 
 # Turn statistics
@@ -313,12 +320,11 @@ turn_stats = {
 # Write main website
 data = {}
 data['pilots'] = pilots
-data['pilots_new'] = pilots_new
-data['pilots_rel'] = pilots_rel
 data['now'] = now
 data['latest_flight'] = latest_flight
 data['count_flight'] = len(flight_data)
 data['turn_stats'] = turn_stats
+data['median_stats'] = median_stats
 env.get_template("index.html") \
   .stream(data) \
   .dump(open(f'_out/index.html', 'w'))

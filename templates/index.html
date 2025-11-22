@@ -1,14 +1,12 @@
 {% extends "base.html" %}
-{% block title %}Colibri Funcup 2025{% endblock %}
-{% block h1 %}Colibri Funcup 2025{% endblock %}
+{% block title %}Colibri Funcup 2026{% endblock %}
+{% block h1 %}Colibri Funcup 2026{% endblock %}
 {% block style %}
-div#ranking_main { display: none; }
-div#ranking_rel { display: none; }
-div#ranking_new { display: none; }
+div#ranking { display: none; }
+div#stats { display: none; }
 
-body:has(input#main:checked) div#ranking_main { display: block; }
-body:has(input#rel:checked) div#ranking_rel { display: block; }
-body:has(input#new:checked) div#ranking_new { display: block; }
+body:has(input#ranking:checked) div#ranking { display: block; }
+body:has(input#stats:checked) div#stats { display: block; }
 
 .toggle {
 	margin: 0 0 1.5rem; box-sizing: border-box;
@@ -55,16 +53,63 @@ body:has(input#new:checked) div#ranking_new { display: block; }
 </section>
 
 {% if pilots %}
+
 <section>
-<h2>Ranking</h2>
+<h2>Rangliste</h2>
 
 <div class="toggle">
-<input type="radio" checked="checked" id="main" name="ranking" /><label for="main">Absolut</label>
-<input type="radio" id="rel" name="ranking" /><label for="rel">Steigerung</label>
-<input type="radio" id="new" name="ranking" /><label for="new">Newcomer</label>
+<input type="radio" checked="checked" id="ranking" name="selection" /><label for="ranking">Normalster Flug</label>
+<input type="radio" id="stats" name="selection"/><label for="stats">Statistiken</label>
 </div>
 
-<div id="ranking_main" style="overflow-x:auto">
+<div id="ranking" style="overflow-x:auto">
+<table class="striped">
+<thead>
+<tr>
+<th>№</th>
+<th></th>
+<th class="text-right">⌚</th>
+<th class="text-right">⏱️</th>
+<th class="text-right">☁️</th>
+<th class="text-right">|⟲-⟳|</th>
+<th class="text-right">⌔</th>
+<th class="text-right"><img src="static/dhv-xc.png" /></th>
+<th class="text-right">Abweichung</th>
+</tr>
+</thead>
+<tbody>
+
+<tr>
+	<td></td>
+	<td style="font-weight: bold;">Max Musterpilot</td>
+	<td class="text-right">{{ median_stats.prettystarttime }}</td>
+	<td class="text-right">{{ median_stats.prettyflighttime }}</td>
+	<td class="text-right">{{ median_stats.maxalt }}m</td>
+	<td class="text-right">{{ median_stats.drehueberschuss }}</td>
+	<td class="text-right">{{ median_stats.sektoren_count }}</td>
+	<td class="text-right">{{ median_stats.xcscore }} pt.</td>
+	<td class="text-right">0%</td>
+	<td></td>
+</tr>
+
+
+{% for p in pilots %}
+<tr>
+<td>{{ p.rank }}</td>
+<td><a href="pilot{{p.pid}}.html">{{ p.name }}</a></td>
+<td class="text-right">{{ p.best_flight.stats.prettystarttime }}</td>
+<td class="text-right">{{ p.best_flight.stats.prettyflighttime }}</td>
+<td class="text-right">{{ p.best_flight.stats.maxalt }}m</td>
+<td class="text-right">{{ p.best_flight.stats.sektoren_count }}</td>
+<td class="text-right">{{ p.best_flight.stats.drehueberschuss }}</td>
+<td class="text-right"><a href="https://de.dhv-xc.de/flight/{{ p.best_flight.IDFlight }}">{{ p.best_flight.stats.xcscore }} pt.</a></td>
+<td class="text-right">{{ p.best_flight.stats.score }}%</td>
+</tr>
+{% endfor %}
+</tbody></table>
+</div>
+
+<div id="stats" style="overflow-x:auto">
 <table class="striped">
 <thead>
 <tr>
@@ -79,12 +124,14 @@ body:has(input#new:checked) div#ranking_new { display: block; }
 <th class="text-right">⌔</th>
 <th class="text-right">🥾</th>
 <th class="text-right">📷</th>
-<th class="text-right">⭐</th>
-<th class="text-right">Punkte</th>
-<th class="text-right">Steigerung</th>
 </tr>
 </thead>
 <tbody>
+<tr>
+	<td></td>
+	<td style="font-weight: bold;">Max Musterpilot</td>
+</tr>
+
 {% for p in pilots %}
 <tr>
 <td>{{ p.rank }}</td>
@@ -100,100 +147,10 @@ body:has(input#new:checked) div#ranking_new { display: block; }
 <td class="text-right">{{ p.stats.sektoren }}</td>
 <td class="text-right">{% if p.stats.hikes %}{{ p.stats.hikes }}{% endif %}</td>
 <td class="text-right">{% if p.stats.fotos %}{{ p.stats.fotos }}{% endif %}</td>
-<td class="text-right">{% if p.stats.sonderwertung %}{{ p.stats.sonderwertung }}{% endif %}</td>
-<td class="text-right">{{ p.points.total }}</td>
-<td class="text-right">{% if p.points.relative %}{{ "{:.02f}".format(p.points.relative)|replace(".", ",")}}×{% endif %}</td>
 </tr>
 {% endfor %}
 </tbody></table>
 </div>
-
-<div id="ranking_rel" style="overflow-x:auto">
-<table class="striped">
-<thead>
-<tr>
-<th>№</th>
-<th></th>
-<th class="text-right">Schaui</th>
-<th class="text-right">Linden</th>
-<th class="text-right">⏱</th>
-<th class="text-right">⟲</th>
-<th class="text-right">⟳</th>
-{# <th class="text-right">◎</th> #}
-<th class="text-right">⌔</th>
-<th class="text-right">🥾</th>
-<th class="text-right">📷</th>
-<th class="text-right">⭐</th>
-<th class="text-right">Punkte</th>
-<th class="text-right">Steigerung</th>
-</tr>
-</thead>
-<tbody>
-{% for p in pilots_rel %}
-<tr>
-<td>{{ p.rank }}</td>
-<td><a href="pilot{{p.pid}}.html">{{ p.name }}</a></td>
-<td class="text-right">{{ p.stats.schauiflights }}</td>
-<td class="text-right">{% if p.stats.lindenflights %}{{ p.stats.lindenflights }}{% endif %}</td>
-<td class="text-right">{{ p.stats.prettyflighttime }}</td>
-<td class="text-right">{{ p.stats.left_turns }}</td>
-<td class="text-right">{{ p.stats.right_turns }}</td>
-{#
-<td class="text-right">{{ p.stats.landepunkt1 }} / {{ p.stats.landepunkt2 }} / {{ p.stats.landepunkt3 }} </td>
-#}
-<td class="text-right">{{ p.stats.sektoren }}</td>
-<td class="text-right">{% if p.stats.hikes %}{{ p.stats.hikes }}{% endif %}</td>
-<td class="text-right">{% if p.stats.fotos %}{{ p.stats.fotos }}{% endif %}</td>
-<td class="text-right">{% if p.stats.sonderwertung %}{{ p.stats.sonderwertung }}{% endif %}</td>
-<td class="text-right">{{ p.points.total }}</td>
-<td class="text-right">{% if p.points.relative %}{{ "{:.02f}".format(p.points.relative)|replace(".", ",")}}×{% endif %}</td>
-</tr>
-{% endfor %}
-</tbody></table>
-</div>
-
-<div id="ranking_new" style="overflow-x:auto">
-<table class="striped">
-<thead>
-<tr>
-<th>№</th>
-<th></th>
-<th class="text-right">Schaui</th>
-<th class="text-right">Linden</th>
-<th class="text-right">⏱</th>
-<th class="text-right">⟲</th>
-<th class="text-right">⟳</th>
-{# <th class="text-right">◎</th> #}
-<th class="text-right">⌔</th>
-<th class="text-right">🥾</th>
-<th class="text-right">📷</th>
-<th class="text-right">⭐</th>
-<th class="text-right">Punkte</th>
-</tr>
-</thead>
-<tbody>
-{% for p in pilots_new %}
-<tr>
-<td>{{ p.rank }}</td>
-<td><a href="pilot{{p.pid}}.html">{{ p.name }}</a></td>
-<td class="text-right">{{ p.stats.schauiflights }}</td>
-<td class="text-right">{% if p.stats.lindenflights %}{{ p.stats.lindenflights }}{% endif %}</td>
-<td class="text-right">{{ p.stats.prettyflighttime }}</td>
-<td class="text-right">{{ p.stats.left_turns }}</td>
-<td class="text-right">{{ p.stats.right_turns }}</td>
-{#
-<td class="text-right">{{ p.stats.landepunkt1 }} / {{ p.stats.landepunkt2 }} / {{ p.stats.landepunkt3 }} </td>
-#}
-<td class="text-right">{{ p.stats.sektoren }}</td>
-<td class="text-right">{% if p.stats.hikes %}{{ p.stats.hikes }}{% endif %}</td>
-<td class="text-right">{% if p.stats.fotos %}{{ p.stats.fotos }}{% endif %}</td>
-<td class="text-right">{% if p.stats.sonderwertung %}{{ p.stats.sonderwertung }}{% endif %}</td>
-<td class="text-right">{{ p.points.total }}</td>
-</tr>
-{% endfor %}
-</tbody></table>
-</div>
-</section>
 
 {% else %}
 
@@ -214,7 +171,7 @@ body:has(input#new:checked) div#ranking_new { display: block; }
 <p>Dies ist der Funcup des <a href="https://gsccolibri.de/">GSC Colibri Freiburg e.V.</a>. Für Details zur Auswertung siehe die <a href="https://www.gsccolibri.de/wettkampf/funcup/">Ausschreibung</a>.
 Die Sektoren können auch als <a href="./sektoren-airspace.txt">Luftraum-Datei im Airspace-Format</a> heruntergeladen werden.
 Fragen werden im Slack-Kanal <tt>#funcup</tt> beantwortet.
-Die Programmierung der Seite, erstellt von Joachim Breitner, kann auf <a href="https://github.com/nomeata/colibri-funcup-2025">GitHub</a> inspiziert werden.
+Die Programmierung der Seite, erstellt von Joachim Breitner, kann auf <a href="https://github.com/nomeata/colibri-funcup-2026">GitHub</a> inspiziert werden.
 </p>
 </section>
 

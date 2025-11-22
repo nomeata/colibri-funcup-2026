@@ -7,36 +7,15 @@
 <h2>Statistiken</h2>
 
 <table>
-<thead>
-<tr>
-<th>Kategorie</th>
-<th class="text-right">Wert</th>
-<th class="text-right">Punkte</th>
-</tr>
-</thead>
 <tbody>
-  <tr><td>Flüge am Schauinsland</td><td class="text-right">{{ stats.schauiflights }}</td><td class="text-right"> {{ points.schauiflights }}</td></tr>
-  <tr><td>Flüge am Lindenberg</td><td class="text-right">{{ stats.lindenflights }}</td><td class="text-right"> {{ points.lindenflights }}</td></tr>
-  <tr><td>Flugzeit</td><td class="text-right">{{ stats.prettyflighttime }}</td><td class="text-right"> {{ points.flighttime }}</td></tr>
-  <tr><td>Hike and fly</td><td class="text-right">{{ stats.hikes }}</td><td class="text-right"> {{ points.hikes }}</td></tr>
-  <tr><td>Fotos</td><td class="text-right">{{ stats.fotos }}</td><td class="text-right"> {{ points.fotos }}</td></tr>
-  <tr><td>Überflogene Sektoren</td><td class="text-right">{{ stats.sektoren }}</td><td class="text-right"> {{ points.sektoren }}</td></tr>
-{#
-<tr><td>Landepunkttreffer &lt; {{ lpradius1 }}m</td><td class="text-right">{{ stats.landepunkt1 }}</td><td class="text-right"> {{ points.landepunkt1 }}</td></tr>
-<tr><td>Landepunkttreffer &lt; {{ lpradius2 }}m</td><td class="text-right">{{ stats.landepunkt2 }}</td><td class="text-right"> {{ points.landepunkt2 }}</td></tr>
-<tr><td>Landepunkttreffer &lt; {{ lpradius3 }}m</td><td class="text-right">{{ stats.landepunkt3 }}</td><td class="text-right"> {{ points.landepunkt3 }}</td></tr>
-#}
-
-<tr><td>Drehüberschuss {{ stats.drehrichtung}}</td><td class="text-right">{{ stats.drehueberschuss }}</td><td class="text-right"> {{ points.drehueberschuss }}</td></tr>
-<tr><td>Sonderwertungen</td><td class="text-right">{{ stats.sonderwertung }}</td><td class="text-right"> {{ points.sonderwertung }}</td></tr>
+  <tr><td>Flüge am Schauinsland</td><td class="text-right">{{ stats.schauiflights }}</td></tr>
+  <tr><td>Flüge am Lindenberg</td><td class="text-right">{{ stats.lindenflights }}</td></tr>
+  <tr><td>Flugzeit</td><td class="text-right">{{ stats.prettyflighttime }}</td></tr>
+  <tr><td>Hike and fly</td><td class="text-right">{{ stats.hikes }}</td></tr>
+  <tr><td>Fotos</td><td class="text-right">{{ stats.fotos }}</td></tr>
+  <tr><td>Überflogene Sektoren</td><td class="text-right">{{ stats.sektoren }}</td></tr>
+  <tr><td>Drehüberschuss {{ stats.drehrichtung}}</td><td class="text-right">{{ stats.drehueberschuss }}</td></tr>
 </tbody>
-<tfoot>
-  <tr><td><b>Gesamt</b></td><td></td><td class="text-right"><b>{{ points.total }}</b></td></tr>
-{% if points.relative %}
-<tr><td>Vorjahr</td><td></td><td class="text-right"> {{ points.old }}</td></tr>
-<tr><td>Relative Steigerung</td><td></td><td class="text-right"> {{"{:.02f}".format(points.relative)|replace(".", ",") }}×</td></tr>
-{% endif %}
-</tfoot>
 <table>
 </section>
 
@@ -57,13 +36,16 @@
 <th class="text-right">№</th>
 <th class="text-right">📆</th>
 <th class="text-right">⏱</th>
+<th class="text-right">☁️</th>
 <th class="text-right">⟲</th>
 <th class="text-right">⟳</th>
 {# <th class="text-right">◎</th> #}
 <th class="text-right">⌔</th>
 <th class="text-right"></th>
 <th class="text-right"></th>
-<th><img src="static/dhv-xc.png" /></th>
+<th class="text-right"><img src="static/dhv-xc.png" /></th>
+<th class="text-right">Score</th>
+<th class="text-right"></th>
 </tr>
 </thead>
 <tbody>
@@ -72,13 +54,16 @@
 <td class="text-right">{{ f.n }}</td>
 <td class="text-right">{{ f.datum }}</td>
 <td class="text-right">{{ f.flugzeit }}</td>
+<td class="text-right">{{ f.maxalt }}m</td>
 <td class="text-right">{{ f.linkskreise }}</td>
 <td class="text-right">{{ f.rechtskreise }}</td>
 {# <td class="text-right">{{ f.landepunktabstand }}</td> #}
 <td class="text-right">{{ f.neue_sektoren_anzahl }}</td>
 <td class="text-center">{% if f.hike %}🥾{% endif %}</td>
 <td class="text-center">{% if f.fotos %}📷{% endif %}</td>
-<td><a href="https://de.dhv-xc.de/flight/{{ f.id }}">🔗</a></td>
+<td class="text-right"><a href="{{f.url}}">{{ f.xcscore }} pt.</a></td>
+<td class="text-right">{{ f.score }}%</td>
+<td class="text-left">{% if f.is_best %}⭐{% endif %}</td>
 </tr>
 {% endfor %}
 </tbody></table>
