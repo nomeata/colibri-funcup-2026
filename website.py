@@ -91,7 +91,9 @@ for flight in flight_data:
     flight['stats']['prettyflighttime'] = pretty_duration(flight['stats']['duration'])
     flight['stats']['xcscore'] = round(flight['BestTaskPoints'])
 
-stat_keys = ['starttime_seconds', 'duration', 'left_turns', 'right_turns', 'drehueberschuss', 'sektoren_count', 'maxalt', 'xcscore']
+stat_keys = [
+    #'starttime_seconds', 
+    'duration', 'left_turns', 'right_turns', 'drehueberschuss', 'sektoren_count', 'maxalt', 'xcscore']
 
 # calculate median flight stats
 # (by storing each category in a sorted list, also used for later distribution analysis)

@@ -68,7 +68,7 @@ body:has(input#stats:checked) div#stats { display: block; }
 <tr>
 <th>№</th>
 <th></th>
-<th class="text-right">⌚</th>
+<!-- <th class="text-right">⌚</th> -->
 <th class="text-right">⏱️</th>
 <th class="text-right">☁️</th>
 <th class="text-right">|⟲-⟳|</th>
@@ -82,7 +82,7 @@ body:has(input#stats:checked) div#stats { display: block; }
 <tr>
 	<td></td>
 	<td style="font-weight: bold;">Max Musterpilot</td>
-	<td class="text-right">{{ median_stats.prettystarttime }}</td>
+	<!-- <td class="text-right">{{ median_stats.prettystarttime }}</td> -->
 	<td class="text-right">{{ median_stats.prettyflighttime }}</td>
 	<td class="text-right">{{ median_stats.maxalt }}m</td>
 	<td class="text-right">{{ median_stats.drehueberschuss }}</td>
@@ -97,7 +97,7 @@ body:has(input#stats:checked) div#stats { display: block; }
 <tr>
 <td>{{ p.rank }}</td>
 <td><a href="pilot{{p.pid}}.html">{{ p.name }}</a></td>
-<td class="text-right">{{ p.best_flight.stats.prettystarttime }}</td>
+<!-- <td class="text-right">{{ p.best_flight.stats.prettystarttime }}</td> -->
 <td class="text-right">{{ p.best_flight.stats.prettyflighttime }}</td>
 <td class="text-right">{{ p.best_flight.stats.maxalt }}m</td>
 <td class="text-right">{{ p.best_flight.stats.sektoren_count }}</td>
