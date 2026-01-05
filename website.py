@@ -126,7 +126,7 @@ for flight in flight_data:
             scores.append(0)
         else:
             scores.append(min(abs(mid - r1), abs(mid - r2))/mid * 100)
-    score = math.sqrt(sum([s*s for s in scores]))
+    score = math.sqrt(sum([s*s for s in scores])/len(scores))
     flight['stats']['score'] = round(score, 1)
 
 def finalize_stats(stats, covered):

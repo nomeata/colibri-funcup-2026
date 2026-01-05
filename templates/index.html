@@ -188,7 +188,31 @@ Die Programmierung der Seite, erstellt von Joachim Breitner, kann auf <a href="h
 </section>
 
 <section>
-<h2>Statistiken</h2>
+<h2>Erklärung</h2>
+
+<p>
+Dieses Jahr dreht sich alles darum, wer den „normalsten“ Flug hatte. Wir berechnen, wie der typischste Schauinsland-Flug aussieht. Für jeden Piloten werten wir den Flug, der diesem idealtypischem Flug am nächsten kommt, und berechnen die Abweichung davon.
+</p>
+
+<p>
+Im folgenden für die, die es genau wissen, die genaue Berechnung:
+</p>
+
+<p>
+Für den idealtypischen Flug berechnen wir jede Kategorie einzeln als den <a href="https://de.wikipedia.org/wiki/Median">Median</a> aller in der Saison erflogenen Werte dieser Kategorie.
+</p>
+
+<p>
+Die Abweichung eines konkreten Fluges davon ist das <a href="https://de.wikipedia.org/wiki/Quadratisches_Mittel">quadratische Mittel</a> der Abweichungen in den einzelnen Kategorien. Diese werden über die empirische Stichprobe berechnet: Ist der Wert im <i>x</i>ten <a href="https://de.wikipedia.org/wiki/Empirisches_Quantil#Perzentil">Perzentil</a>, so wird die Abweichung berechnet als <i>2×|x-50%|</i>. Daraus ergibt sich: Eine Abweichung von 0% heißt, dass man den Wert getroffen hat. Eine Abweichung von 100% heißt das man den extremsten (größten oder kleinsten) Wert erfolgen hat. Eine Abweichung von 50% heißt dass man einen Wert erflogen hat, der größer (oder kleiner) als ¾ aller Werte ist.
+</p>
+
+<p>
+Ein Vorteil dieser Berechnung, gegenüber einem direkten Vergleich der Werte, ist dass sich die Werte normieren und es in allen kategrien gleich „schwierig“ ist, eine bestimme Prozentzahl zu erreichen, da nur wichtig ist, im vergleich zu wie vielen anderen Flügen man näher dran ist.
+</p>
+</section>
+
+<section>
+<h2>Sonstige Statistiken</h2>
 
 <p>Wer sind die größten und kleinsten Drehwürmer (ab 100 Kreisen)?</p>
 
