@@ -3,7 +3,7 @@
 set -e
 
 limit=2000
-year=2025
+year=2026
 
 echo "flights.json: fetching"
 for s in 0 500 1000 1500 2000
