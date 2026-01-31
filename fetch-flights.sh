@@ -13,7 +13,7 @@ wget \
 	--load-cookies _tmp/cookies.txt \
 	--save-cookies _tmp/cookies.txt \
         --keep-session-cookies \
-    "https://de.dhv-xc.de/api/fli/flights?d0=1.1.$year&d1=22.11.$year&fkto%5B%5D=9306&fkto%5B%5D=11362&clubde%5B%5D=130&navpars=%7B%22start%22%3A$s%2C%22limit%22%3A$limit%7D" \
+    "https://de.dhv-xc.de/api/fli/flights?d0=1.1.$year&d1=15.9.$year&fkto%5B%5D=9306&fkto%5B%5D=11362&clubde%5B%5D=130&navpars=%7B%22start%22%3A$s%2C%22limit%22%3A$limit%7D" \
 	-O _tmp/flights-$s.json.tmp
 done
 
